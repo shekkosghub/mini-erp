@@ -6,6 +6,13 @@ from .inventario import (
     ProductoUpdateView,
     ProductoDeleteView
 )
+from .compras import (
+    CompraListView,
+    CompraDetailView,
+    CompraCreateView,
+    CompraDeleteView,
+    CompraAnularView
+)
 
 __all__ = [
     'home',
@@ -16,4 +23,9 @@ __all__ = [
     'ProductoCreateView',
     'ProductoUpdateView',
     'ProductoDeleteView',
+    'CompraListView',
+    'CompraDetailView',
+    'CompraCreateView',
+    'CompraDeleteView',
+    'CompraAnularView',
 ]

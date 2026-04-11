@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nueva Compra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .formset-row {
+        background-color: #f8f9fa;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .delete-row {
+        margin-top: 30px;
+    }
+    .subtotal {
+        font-weight: bold;
+        color: #28a745;
+    }
+    .table-responsive {
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-cart-plus"></i> Registrar Nueva Compra
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="compra-form">
+                        {% csrf_token %}
+                        
+                        <!-- Formulario principal -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="{{ form.proveedor.id_for_label }}" class="form-label">
+                                    <i class="bi bi-building"></i> Proveedor *
+                                </label>
+                                {{ form.proveedor }}
+                                {% if form.proveedor.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.proveedor.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.observaciones.id_for_label }}" class="form-label">
+                                    <i class="bi bi-chat"></i> Observaciones
+                                </label>
+                                {{ form.observaciones }}
+                            </div>
+                        </div>
+                        
+                        <!-- Formset de detalles -->
+                        <h4 class="mt-4 mb-3">
+                            <i class="bi bi-boxes"></i> Productos
+                        </h4>
+                        
+                        {{ formset.management_form }}
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="detalles-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Producto *</th>
+                                        <th>Cantidad *</th>
+                                        <th>Precio Unitario *</th>
+                                        <th>Subtotal</th>
+                                        <th>Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="formset-body">
+                                    {% for form in formset %}
+                                    <tr class="formset-row">
+                                        <td>
+                                            {{ form.id }}
+                                            {{ form.producto }}
+                                            {% if form.producto.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.producto.errors }}
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ form.cantidad }}
+                                            {% if form.cantidad.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.cantidad.errors }}
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ form.precio_unitario }}
+                                            {% if form.precio_unitario.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.precio_unitario.errors }}
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="subtotal-cell">S/ 0.00</td>
+                                        <td class="text-center">
+                                            {{ form.DELETE }}
+                                            <button type="button" class="btn btn-danger btn-sm delete-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-info">
+                                        <td colspan="3" class="text-end fw-bold">TOTAL:</td>
+                                        <td colspan="2" class="fw-bold" id="total-general">S/ 0.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                        <button type="button" class="btn btn-secondary mb-3" id="add-row">
+                            <i class="bi bi-plus-circle"></i> Agregar otro producto
+                        </button>
+                        
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{% url 'erp:compra_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Registrar Compra
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para calcular subtotal de una fila
+    function calcularSubtotal(fila) {
+        const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
+        const precio = parseFloat(fila.querySelector('.precio-input')?.value) || 0;
+        const subtotal = cantidad * precio;
+        const subtotalCell = fila.querySelector('.subtotal-cell');
+        if (subtotalCell) {
+            subtotalCell.textContent = `S/ ${subtotal.toFixed(2)}`;
+        }
+        return subtotal;
+    }
+    
+    // Función para calcular total general
+    function calcularTotalGeneral() {
+        let total = 0;
+        document.querySelectorAll('.formset-row').forEach(fila => {
+            const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
+            const precio = parseFloat(fila.querySelector('.precio-input')?.value) || 0;
+            total += cantidad * precio;
+        });
+        document.getElementById('total-general').textContent = `S/ ${total.toFixed(2)}`;
+    }
+    
+    // Actualizar cálculos cuando cambian los valores
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('cantidad-input') || 
+            e.target.classList.contains('precio-input')) {
+            const fila = e.target.closest('.formset-row');
+            if (fila) {
+                calcularSubtotal(fila);
+                calcularTotalGeneral();
+            }
+        }
+    });
+    
+    // Inicializar cálculos para filas existentes
+    document.querySelectorAll('.formset-row').forEach(fila => {
+        calcularSubtotal(fila);
+    });
+    calcularTotalGeneral();
+    
+    // Agregar nueva fila
+    let formIndex = parseInt('{{ formset.total_form_count|escapejs }}'); // Índice para nuevos formularios
+    document.getElementById('add-row').addEventListener('click', function() {
+        const newRow = document.createElement('tr');
+        newRow.className = 'formset-row';
+        
+        const template = `
+            <td>
+                <select name="detallecompra_set-${formIndex}-producto" class="form-control producto-select">
+                    <option value="">---------</option>
+                    {% for producto in productos %}
+                    <option value="{{ producto.id }}">{{ producto.codigo }} - {{ producto.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="number" name="detallecompra_set-${formIndex}-cantidad" value="1" min="1" class="form-control cantidad-input">
+            </td>
+            <td>
+                <input type="number" name="detallecompra_set-${formIndex}-precio_unitario" step="0.01" min="0" class="form-control precio-input">
+            </td>
+            <td class="subtotal-cell">S/ 0.00</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm delete-row">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        
+        newRow.innerHTML = template;
+        document.getElementById('formset-body').appendChild(newRow);
+    });
+        // Actualizar TOTAL_FORMS
+        const totalForms = document.getElementById('id_detallecompra_set-TOTAL_FORMS');
+        formIndex++;
+        totalForms.value = formIndex;
+        
+        // Agregar evento eliminar a la nueva fila
+        newRow.querySelector('.delete-row').addEventListener('click', function() {
+            newRow.remove();
+            calcularTotalGeneral();
+            // Actualizar TOTAL_FORMS
+            totalForms.value = document.querySelectorAll('.formset-row').length;
+        });
+        
+        // Agregar eventos de cálculo
+        const cantidadInput = newRow.querySelector('.cantidad-input');
+        const precioInput = newRow.querySelector('.precio-input');
+        
+        cantidadInput.addEventListener('change', () => {
+            calcularSubtotal(newRow);
+            calcularTotalGeneral();
+        });
+        
+        precioInput.addEventListener('change', () => {
+            calcularSubtotal(newRow);
+            calcularTotalGeneral();
+        });
+        
+        calcularSubtotal(newRow);
+        calcularTotalGeneral();
+    
+    // Eliminar filas existentes
+    document.querySelectorAll('.delete-row').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const row = this.closest('.formset-row');
+            const deleteCheckbox = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+            if (deleteCheckbox) {
+                deleteCheckbox.checked = true;
+                row.style.display = 'none';
+            } else {
+                row.remove();
+            }
+            calcularTotalGeneral();
+            // Actualizar TOTAL_FORMS
+            const totalForms = document.getElementById('id_detallecompra_set-TOTAL_FORMS');
+            totalForms.value = document.querySelectorAll('.formset-row:not([style*="display: none"])').length;
+        });
+    });
+});    
+</script>
+{% endblock %}

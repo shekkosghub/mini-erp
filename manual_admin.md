@@ -1,4 +1,4 @@
-# Manual de Usuario - Almacén
+# Manual de Usuario - Administrador
 ## Sistema Mini ERP
 
 ---
@@ -11,27 +11,30 @@
 3. Haz clic en **"Entrar"**
 
 ### Tras el login
-Serás redirigido automáticamente al **Dashboard de Almacén**.
+Serás redirigido automáticamente al **Dashboard de Administrador**.
 
 ---
 
-## 2. Dashboard de Almacén
+## 2. Dashboard de Administrador
 
 El dashboard muestra:
-- Tu nombre de usuario y rol
-- Total de productos en el sistema
-- Stock total (suma de todas las unidades)
-- Productos con stock bajo (5 o menos unidades)
-- Botones de acceso rápido:
-  - "Ver Inventario"
-  - "Nuevo Producto"
+- Tu nombre de usuario y rol (Admin)
+- **Estadísticas**:
+  - Total de productos
+  - Productos con stock bajo
+  - Productos sin stock
+- **Accesos rápidos**:
+  - Panel de Admin Django
+  - Gestionar Inventario
+- **Información del usuario**
 
 ### Navegación (barra superior)
 La barra de navegación contiene:
 - **ERP Sistema** (logo) - Regresa al dashboard
 - **Inventario** - Gestionar productos
+- **Admin Panel** - Panel de administración Django
 - **Tu usuario** (dropdown) - Menú con:
-  - Tu nombre + badge del rol
+  - Tu nombre + badge "Admin"
   - "Mi Perfil"
   - "Cerrar Sesión"
 
@@ -65,7 +68,7 @@ La barra de navegación contiene:
 
 ### Pasos
 1. Desde el inventario, haz clic en **"Nuevo Producto"** (botón azul)
-2. O desde el dashboard, haz clic en **"Nuevo Producto"**
+2. O desde el dashboard, haz clic en **"Gestionar Inventario"**
 3. Rellena el formulario:
    - **Código**: Identificador único (ej: PROD-001)
    - **Nombre**: Nombre del producto
@@ -101,33 +104,54 @@ Verás un mensaje verde confirmando la actualización.
 ### ⚠️ Advertencia
 La eliminación es permanente y no se puede deshacer.
 
-### Mensaje de éxito
-Verás un mensaje verde confirmando la eliminación.
+---
+
+## 7. Gestionar Compras
+
+### Acceder a compras
+Desde el menú, busca el enlace a **Compras** (si está disponible) o usa `/compras/`
+
+### Funcionalidades de compras:
+- Ver historial de compras
+- Registrar nueva compra
+- Ver detalle de compra
+- Anular compra (revierte el stock)
+
+### Registrar compra
+1. Haz clic en **"Nueva Compra"**
+2. Completa los datos del proveedor
+3. Agrega productos con cantidad y precio
+4. El stock se actualiza automáticamente
 
 ---
 
-## 7. Buscar Productos
+## 8. Panel de Administración Django
+
+### Acceder
+Haz clic en **"Admin Panel"** en el menú superior
+
+### Funciones disponibles:
+- Gestionar **Usuarios** (crear, editar, eliminar)
+- Gestionar **Perfiles** (asignar roles)
+- Gestionar **Productos**
+- Gestionar **Compras** y detalles
+- Ver registros del sistema
+
+### ⚠️ Advertencia
+El panel de Django es para administración técnica. Usa el inventario para gestión diaria de productos.
+
+---
+
+## 9. Buscar Productos
 
 Usa la barra de búsqueda para filtrar por:
 - Código
 - Nombre
 - Descripción
 
-Escribe y presiona **"Buscar"** para filtrar los resultados.
-
 ---
 
-## 8. Limitaciones como Almacén
-
-Como almacenista **no puedes**:
-- ❌ Acceder al panel de administración de Django
-- ❌ Gestionar usuarios del sistema
-- ❌ Ver todas las estadísticas globales (solo las del dashboard)
-- ❌ Registrar ventas
-
----
-
-## 9. Cerrar Sesión
+## 10. Cerrar Sesión
 
 1. Haz clic en tu nombre de usuario (esquina superior derecha)
 2. Se abrirá un menú desplegable
@@ -135,35 +159,45 @@ Como almacenista **no puedes**:
 
 ---
 
-## 10. Solución de Problemas
+## 11. Roles del Sistema
+
+| Rol | Permisos |
+|-----|-----------|
+| **Admin** | Acceso completo a todo |
+| **Almacén** | Gestionar inventario (CRUD productos) |
+| **Vendedor** | Solo ver productos |
+
+---
+
+## 12. Solución de Problemas
 
 | Problema | Solución |
 |----------|----------|
 | No puedo iniciar sesión | Verifica tu usuario y contraseña |
 | No puedo crear producto | Revisa que todos los campos requeridos estén llenos |
 | Código duplicado | Cada producto debe tener un código único |
-| No puedo eliminar | Verifica que el producto existe |
+| Error en compras | Verifica que los productos existan |
 | La página no carga | Refresca el navegador o contacta al admin |
-| Error al guardar | Revisa los campos del formulario |
 
 ---
 
-## 11. Iconos utilizados
+## 13. Iconos utilizados
 
 El sistema usa iconos de **Bootstrap Icons**:
 - 📦 `Inventario` - Icono de caja
-- ➕ `Nuevo Producto` - Icono de suma
+- ➕ `Nuevo` - Icono de suma
 - ✏️ `Editar` - Icono de lápiz
 - 🗑️ `Eliminar` - Icono de basuración
+- 🛒 `Compras` - Icono de carrito
+- 🛡️ `Admin Panel` - Icono de escudo
 - 👤 `Usuario` - Icono de persona
-- 🚪 `Cerrar sesión` - Icono de flecha
 
 ---
 
-## 12. Contacto
+## 14. Contacto
 
 Si tienes problemas técnicos o necesitas ayuda adicional, contacta al administrador del sistema.
 
 ---
 
-*Manual generado para el rol de Almacén - Mini ERP*
+*Manual generado para el rol de Administrador - Mini ERP*

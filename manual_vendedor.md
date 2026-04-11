@@ -19,13 +19,18 @@ Serás redirigido automáticamente al **Dashboard de Vendedor** donde podrás ve
 
 El dashboard muestra:
 - Tu nombre de usuario y rol
-- Lista de productos destacados (con stock disponible)
 - Total de productos disponibles
+- Lista de productos destacados (con stock disponible)
+- Enlace rápido al inventario
 
-### Navegación
-En la barra superior encontrarás:
+### Navegación (barra superior)
+La barra de navegación contiene:
+- **ERP Sistema** (logo) - Regresa al dashboard
 - **Inventario** - Ver lista de productos
-- **Tu nombre** - Menú de usuario con opción de cerrar sesión
+- **Tu usuario** (dropdown) - Menú con:
+  - Tu nombre + badge del rol
+  - "Mi Perfil"
+  - "Cerrar Sesión"
 
 ---
 
@@ -65,15 +70,17 @@ Como vendedor **no puedes**:
 - ❌ Editar productos existentes
 - ❌ Eliminar productos
 - ❌ Acceder al panel de administración
+- ❌ Registrar compras
 
-Si intentas acceder a estas funciones, recibirás un mensaje de **"Acceso denegado"**.
+Si intentas acceder a estas funciones, recibirás un mensaje de **"Acceso denegado" (403)**.
 
 ---
 
 ## 5. Cerrar Sesión
 
 1. Haz clic en tu nombre de usuario (esquina superior derecha)
-2. Selecciona **"Cerrar Sesión"**
+2. Se abrirá un menú desplegable
+3. Haz clic en **"Cerrar Sesión"**
 
 ---
 
@@ -84,11 +91,22 @@ Si intentas acceder a estas funciones, recibirás un mensaje de **"Acceso denega
 | No puedo iniciar sesión | Verifica tu usuario y contraseña |
 | No veo el inventario | Asegúrate de estar logueado |
 | No puedo crear productos | Es normal, los vendedores no tienen ese permiso |
-| La página no carga | Refresca el navegador o reinicia el servidor |
+| La página no carga | Refresca el navegador o contacta al admin |
+| Mensaje "Acceso denegado" | No tienes permiso para esa función |
 
 ---
 
-## 7. Contacto
+## 7. Iconos utilizados
+
+El sistema usa iconos de **Bootstrap Icons**:
+- 📦 `Inventario` - Icono de caja
+- 👤 `Usuario` - Icono de persona
+- 🚪 `Cerrar sesión` - Icono de flecha
+- 🔍 `Buscar` - Icono de lupa
+
+---
+
+## 8. Contacto
 
 Si tienes problemas técnicos, contacta al administrador del sistema.
 

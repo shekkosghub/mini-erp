@@ -13,4 +13,11 @@ urlpatterns = [
     path('inventario/crear/', views.ProductoCreateView.as_view(), name='producto_create'),
     path('inventario/editar/<int:pk>/', views.ProductoUpdateView.as_view(), name='producto_update'),
     path('inventario/eliminar/<int:pk>/', views.ProductoDeleteView.as_view(), name='producto_delete'),
+    # URLs de compras
+    path('compras/', views.CompraListView.as_view(), name='compra_list'),
+    path('compras/<int:pk>/', views.CompraDetailView.as_view(), name='compra_detail'),
+    path('compras/crear/', views.CompraCreateView.as_view(), name='compra_create'),
+    path('compras/eliminar/<int:pk>/', views.CompraDeleteView.as_view(), name='compra_delete'),
+    path('compras/anular/<int:pk>/', views.CompraAnularView.as_view(), name='compra_anular'),
+
 ]
