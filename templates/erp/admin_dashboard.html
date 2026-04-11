@@ -1,29 +1,80 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Mini ERP</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
-        header { background: #2c3e50; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        header h1 { margin: 0; font-size: 1.5rem; }
-        .logout { color: white; text-decoration: none; }
-        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; }
-        .card h2 { margin-top: 0; color: #2c3e50; }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Admin Dashboard - Mini ERP</h1>
-        <a href="/accounts/logout/" class="logout">Cerrar sesión</a>
-    </header>
-    <div class="container">
-        <div class="card">
-            <h2>Bienvenido, Administrador</h2>
-            <p>Tienes acceso completo al sistema.</p>
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Mini ERP{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-5">
+                <i class="bi bi-shield-check"></i> Dashboard de Administrador
+            </h1>
+            <p class="text-muted">Resumen del sistema</p>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Estadísticas -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-box-seam"></i> Total Productos</h5>
+                    <p class="card-text display-4">{{ total_productos }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-exclamation-triangle"></i> Stock Bajo</h5>
+                    <p class="card-text display-4">{{ stock_bajo }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-x-circle"></i> Sin Stock</h5>
+                    <p class="card-text display-4">{{ sin_stock }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-gear"></i> Administración</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="/admin/" class="text-decoration-none">
+                                <i class="bi bi-shield-lock"></i> Panel de Admin Django
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'erp:producto_list' %}" class="text-decoration-none">
+                                <i class="bi bi-box-seam"></i> Gestionar Inventario
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-circle"></i> Información</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Usuario:</strong> {{ user.username }}</p>
+                    <p><strong>Rol:</strong> {{ user.get_profile_role_display }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
