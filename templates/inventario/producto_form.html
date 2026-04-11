@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Editar Producto - {{ form.instance.nombre }}
+    {% else %}
+        Nuevo Producto
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-box-seam"></i>
+                        {% if form.instance.pk %}
+                            Editar Producto
+                        {% else %}
+                            Nuevo Producto
+                        {% endif %}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Campo: Código -->
+                        <div class="mb-3">
+                            <label for="{{ form.codigo.id_for_label }}" class="form-label">
+                                <i class="bi bi-upc-scan"></i> Código *
+                            </label>
+                            <input type="text" 
+                                   name="{{ form.codigo.name }}"
+                                   id="{{ form.codigo.id_for_label }}"
+                                   class="form-control {% if form.codigo.errors %}is-invalid{% endif %}"
+                                   value="{{ form.codigo.value|default:'' }}"
+                                   placeholder="Ej: PROD-001"
+                                   required>
+                            {% if form.codigo.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.codigo.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Código único del producto</div>
+                        </div>
+
+                        <!-- Campo: Nombre -->
+                        <div class="mb-3">
+                            <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                                <i class="bi bi-tag"></i> Nombre *
+                            </label>
+                            <input type="text" 
+                                   name="{{ form.nombre.name }}"
+                                   id="{{ form.nombre.id_for_label }}"
+                                   class="form-control {% if form.nombre.errors %}is-invalid{% endif %}"
+                                   value="{{ form.nombre.value|default:'' }}"
+                                   placeholder="Ej: Laptop HP Pavilion"
+                                   required>
+                            {% if form.nombre.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.nombre.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Campo: Descripción -->
+                        <div class="mb-3">
+                            <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                                <i class="bi bi-file-text"></i> Descripción
+                            </label>
+                            <textarea name="{{ form.descripcion.name }}"
+                                      id="{{ form.descripcion.id_for_label }}"
+                                      class="form-control {% if form.descripcion.errors %}is-invalid{% endif %}"
+                                      rows="4"
+                                      placeholder="Descripción detallada del producto...">{{ form.descripcion.value|default:'' }}</textarea>
+                            {% if form.descripcion.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.descripcion.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Campo opcional</div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Campo: Precio -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.precio.id_for_label }}" class="form-label">
+                                    <i class="bi bi-currency-dollar"></i> Precio (S/.) *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">S/.</span>
+                                    <input type="number" 
+                                           step="0.01"
+                                           name="{{ form.precio.name }}"
+                                           id="{{ form.precio.id_for_label }}"
+                                           class="form-control {% if form.precio.errors %}is-invalid{% endif %}"
+                                           value="{{ form.precio.value|default:'' }}"
+                                           placeholder="0.00"
+                                           required>
+                                </div>
+                                {% if form.precio.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.precio.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Campo: Stock -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.stock.id_for_label }}" class="form-label">
+                                    <i class="bi bi-boxes"></i> Stock *
+                                </label>
+                                <input type="number" 
+                                       name="{{ form.stock.name }}"
+                                       id="{{ form.stock.id_for_label }}"
+                                       class="form-control {% if form.stock.errors %}is-invalid{% endif %}"
+                                       value="{{ form.stock.value|default:'0' }}"
+                                       min="0"
+                                       required>
+                                {% if form.stock.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.stock.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">Cantidad disponible en inventario</div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'erp:producto_list' %}" class="btn btn-secondary me-md-2">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i>
+                                {% if form.instance.pk %}
+                                    Actualizar Producto
+                                {% else %}
+                                    Crear Producto
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="card mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-info-circle"></i> Información
+                    </h6>
+                    <p class="card-text small text-muted mb-0">
+                        Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+                        El código debe ser único en todo el sistema.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

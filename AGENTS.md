@@ -19,7 +19,22 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Tests
-python manage.py test
+# Run all tests
+python manage.py test erp
+
+# Run specific tests
+python manage.py test erp.tests.ProfileModelTest
+python manage.py test erp.tests.HomeViewTest
+
+# Run with more verbosity
+python manage.py test erp --verbosity=2
+
+# Run and stop at the first error
+python manage.py test erp --failfast
+
+# Run tests with coverage (requires coverage)
+coverage run manage.py test erp
+coverage report
 
 # Create superuser
 python manage.py createsuperuser
