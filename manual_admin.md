@@ -106,7 +106,28 @@ La eliminación es permanente y no se puede deshacer.
 
 ---
 
-## 7. Gestionar Compras
+## 7. Gestionar Ventas
+
+### Acceder a ventas
+Desde el menú superior haz clic en **"Ventas"** o usa `/ventas/`
+
+### Funcionalidades de ventas:
+- Ver historial de ventas
+- Registrar nueva venta
+- Ver detalle de venta
+
+### Registrar venta
+1. Haz clic en **"Nueva Venta"**
+2. Selecciona el cliente
+3. Agrega productos con cantidad y precio de venta
+4. El stock se descuenta automáticamente
+
+### ⚠️ Importante
+Las ventas descuetan el stock de los productos. Verifica que haya stock disponible antes de registrar una venta.
+
+---
+
+## 8. Gestionar Compras
 
 ### Acceder a compras
 Desde el menú, busca el enlace a **Compras** (si está disponible) o usa `/compras/`
@@ -135,6 +156,7 @@ Haz clic en **"Admin Panel"** en el menú superior
 - Gestionar **Perfiles** (asignar roles)
 - Gestionar **Productos**
 - Gestionar **Compras** y detalles
+- Gestionar **Ventas** y detalles
 - Ver registros del sistema
 
 ### ⚠️ Advertencia

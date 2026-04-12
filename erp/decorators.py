@@ -55,7 +55,7 @@ def vendedor_can_view(view_func):
             return view_func(request, *args, **kwargs)
         
         # Vendedor solo puede ver (métodos seguros)
-        if user_role == 'vendedor' and request.method in ['GET', 'HEAD']:
+        if user_role == 'vendedor' and request.method in ['GET', 'POST','HEAD']:
             return view_func(request, *args, **kwargs)
         
         # Otros casos: denegar permiso

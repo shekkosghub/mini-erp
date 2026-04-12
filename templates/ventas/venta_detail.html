@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Venta #{{ venta.id }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h3>Venta #{{ venta.id }}</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>Cliente:</strong> {{ venta.cliente.nombre }}</p>
+            <p><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</p>
+            <p><strong>Observaciones:</strong> {{ venta.observaciones|default:"--" }}</p>
+            <hr>
+            <h4>Productos</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th></tr>
+                </thead>
+                <tbody>
+                    {% for detalle in venta.detalles.all %}
+                    <tr>
+                        <td>{{ detalle.producto.nombre }}</td>
+                        <td>{{ detalle.cantidad }}</td>
+                        <td>S/ {{ detalle.precio_venta|floatformat:2 }}</td>
+                        <td>S/ {{ detalle.get_subtotal|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-info"><td colspan="3" class="text-end fw-bold">TOTAL:</td><td>S/ {{ venta.total|floatformat:2 }}</td></tr>
+                </tfoot>
+            </table>
+            <a href="{% url 'erp:venta_list' %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

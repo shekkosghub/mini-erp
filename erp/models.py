@@ -83,4 +83,53 @@ class DetalleCompra(models.Model):
     
     def get_subtotal(self):
         """Calcula el subtotal del detalle"""
-        return self.cantidad * self.precio_unitario    
+        return self.cantidad * self.precio_unitario
+
+class Cliente(models.Model):
+    nombre = models.CharField('Nombre', max_length=200)
+    email = models.EmailField('Email', blank=True)
+    telefono = models.CharField('Teléfono', max_length=20, blank=True)
+    direccion = models.TextField('Dirección', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Cliente'
+        verbose_name_plural = 'Clientes'
+        ordering = ['nombre']
+    
+    def __str__(self):
+        return self.nombre
+
+class Venta(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, verbose_name='Cliente')
+    fecha = models.DateTimeField('Fecha de venta', auto_now_add=True)
+    total = models.DecimalField('Total', max_digits=10, decimal_places=2, default=0)
+    observaciones = models.TextField('Observaciones', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Venta'
+        verbose_name_plural = 'Ventas'
+        ordering = ['-fecha']
+    
+    def __str__(self):
+        return f"Venta #{self.id} - {self.cliente.nombre} - {self.fecha.strftime('%d/%m/%Y')}"
+    
+    def get_absolute_url(self):
+        return reverse('erp:venta_detail', args=[self.pk])
+
+class DetalleVenta(models.Model):
+    venta = models.ForeignKey(Venta, on_delete=models.CASCADE, related_name='detalles', verbose_name='Venta')
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT, verbose_name='Producto')
+    cantidad = models.PositiveIntegerField('Cantidad')
+    precio_venta = models.DecimalField('Precio unitario', max_digits=10, decimal_places=2)
+    
+    class Meta:
+        verbose_name = 'Detalle de venta'
+        verbose_name_plural = 'Detalles de venta'
+    
+    def __str__(self):
+        return f"{self.cantidad}x {self.producto.nombre}"
+    
+    def get_subtotal(self):
+        return self.cantidad * self.precio_venta    

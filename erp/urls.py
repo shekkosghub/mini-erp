@@ -19,5 +19,9 @@ urlpatterns = [
     path('compras/crear/', views.CompraCreateView.as_view(), name='compra_create'),
     path('compras/eliminar/<int:pk>/', views.CompraDeleteView.as_view(), name='compra_delete'),
     path('compras/anular/<int:pk>/', views.CompraAnularView.as_view(), name='compra_anular'),
+    # Ventas
+    path('ventas/', views.VentaListView.as_view(), name='venta_list'),
+    path('ventas/<int:pk>/', views.VentaDetailView.as_view(), name='venta_detail'),
+    path('ventas/crear/', views.VentaCreateView.as_view(), name='venta_create'),
 
 ]

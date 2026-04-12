@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.db.models import F
-from .models import Producto, DetalleCompra
+from erp.models import Producto, DetalleCompra, DetalleVenta
+from django.core.exceptions import ValidationError
 
 class CompraService:
     """Servicio para manejar la lógica de compras"""
@@ -72,3 +73,45 @@ class CompraService:
         # compra.save()
         
         return True
+
+class VentaService:
+    @staticmethod
+    @transaction.atomic
+    def procesar_venta(venta, detalles_data):
+        """
+        Crea los detalles de venta y descuenta el stock.
+        detalles_data: lista de dict con 'producto', 'cantidad', 'precio_venta'
+        """
+        detalles_creados = []
+        for detalle_data in detalles_data:
+            producto = detalle_data['producto']
+            cantidad = detalle_data['cantidad']
+            precio_venta = detalle_data['precio_venta']
+            
+            # Validar stock suficiente
+            if producto.stock < cantidad:
+                raise ValidationError(f'Stock insuficiente para "{producto.nombre}". Disponible: {producto.stock}')
+            
+            # Crear detalle
+            detalle = DetalleVenta.objects.create(
+                venta=venta,
+                producto=producto,
+                cantidad=cantidad,
+                precio_venta=precio_venta
+            )
+            detalles_creados.append(detalle)
+            
+            # Descontar stock (usar F() para evitar race conditions)
+            producto.stock = F('stock') - cantidad
+            producto.save(update_fields=['stock'])
+        
+        # Refrescar productos para obtener valores actualizados
+        for detalle in detalles_creados:
+            detalle.producto.refresh_from_db()
+        
+        # Calcular y actualizar el total de la venta
+        total = sum(d.get_subtotal() for d in detalles_creados)
+        venta.total = total
+        venta.save(update_fields=['total'])
+        
+        return venta

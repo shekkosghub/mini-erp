@@ -54,6 +54,15 @@
                     </li>
                     {% endif %}
                 {% endif %}
+                {% if user.is_authenticated %}
+                    {% if user.profile.role == 'admin' or user.profile.role == 'almacen' or user.profile.role == 'vendedor' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'erp:venta_list' %}">
+                            <i class="bi bi-receipt"></i> Ventas
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}

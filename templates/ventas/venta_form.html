@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nueva Venta{% endblock %}
+
+{% block extra_css %}
+<style>
+    .formset-row {
+        background-color: #f8f9fa;
+        margin-bottom: 5px;
+    }
+    .delete-row {
+        margin-top: 28px;
+    }
+    .subtotal-cell {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title mb-0"><i class="bi bi-cart-check"></i> Registrar Venta</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" id="venta-form">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.cliente.id_for_label }}" class="form-label">Cliente *</label>
+                        {{ form.cliente }}
+                        {% if form.cliente.errors %}
+                            <div class="invalid-feedback d-block">{{ form.cliente.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.observaciones.id_for_label }}" class="form-label">Observaciones</label>
+                        {{ form.observaciones }}
+                    </div>
+                </div>
+                
+                <h4 class="mt-4">Productos</h4>
+                {{ formset.management_form }}
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="detalles-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Subtotal</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="formset-body">
+                            {% for form in formset %}
+                            <tr class="formset-row">
+                                <td>
+                                    {{ form.id }}
+                                    {{ form.producto }}
+                                    {% if form.producto.errors %}<div class="invalid-feedback d-block">{{ form.producto.errors }}</div>{% endif %}
+                                </td>
+                                <td>
+                                    {{ form.cantidad }}
+                                    {% if form.cantidad.errors %}<div class="invalid-feedback d-block">{{ form.cantidad.errors }}</div>{% endif %}
+                                </td>
+                                <td>
+                                    {{ form.precio_venta }}
+                                    {% if form.precio_venta.errors %}<div class="invalid-feedback d-block">{{ form.precio_venta.errors }}</div>{% endif %}
+                                </td>
+                                <td class="subtotal-cell">S/ 0.00</td>
+                                <td class="text-center">
+                                    {{ form.DELETE }}
+                                    <button type="button" class="btn btn-danger btn-sm delete-row"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-info">
+                                <td colspan="3" class="text-end fw-bold">TOTAL VENTA:</td>
+                                <td colspan="2" class="fw-bold" id="total-general">S/ 0.00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <button type="button" class="btn btn-secondary mb-3" id="add-row">
+                    <i class="bi bi-plus-circle"></i> Agregar otro producto
+                </button>
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'erp:venta_list' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">Registrar Venta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let formIndex = parseInt('{{ formset.total_form_count|escapejs }}');
+    
+    function calcularSubtotal(fila) {
+        const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
+        const precio = parseFloat(fila.querySelector('.precio-input')?.value) || 0;
+        const subtotal = cantidad * precio;
+        const subtotalCell = fila.querySelector('.subtotal-cell');
+        if (subtotalCell) subtotalCell.textContent = `S/ ${subtotal.toFixed(2)}`;
+        return subtotal;
+    }
+    
+    function calcularTotalGeneral() {
+        let total = 0;
+        document.querySelectorAll('.formset-row').forEach(fila => {
+            const cantidad = parseFloat(fila.querySelector('.cantidad-input')?.value) || 0;
+            const precio = parseFloat(fila.querySelector('.precio-input')?.value) || 0;
+            total += cantidad * precio;
+        });
+        document.getElementById('total-general').textContent = `S/ ${total.toFixed(2)}`;
+    }
+    
+    function agregarEventosFila(fila) {
+        const inputs = fila.querySelectorAll('.cantidad-input, .precio-input');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                calcularSubtotal(fila);
+                calcularTotalGeneral();
+            });
+        });
+        const deleteBtn = fila.querySelector('.delete-row');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                const deleteCb = fila.querySelector('input[type="checkbox"][name$="-DELETE"]');
+                if (deleteCb) {
+                    deleteCb.checked = true;
+                    fila.style.display = 'none';
+                } else {
+                    fila.remove();
+                }
+                calcularTotalGeneral();
+                actualizarTotalForms();
+            });
+        }
+    }
+    
+    function actualizarTotalForms() {
+        const totalForms = document.getElementById('id_detalleventa_set-TOTAL_FORMS');
+        if (totalForms) {
+            totalForms.value = document.querySelectorAll('.formset-row:not([style*="display: none"])').length;
+        }
+    }
+    
+    // Inicializar filas existentes
+    document.querySelectorAll('.formset-row').forEach(fila => {
+        agregarEventosFila(fila);
+        calcularSubtotal(fila);
+    });
+    calcularTotalGeneral();
+    
+    // Agregar nueva fila
+    document.getElementById('add-row').addEventListener('click', function() {
+        const tbody = document.getElementById('formset-body');
+        const newRow = document.createElement('tr');
+        newRow.className = 'formset-row';
+        newRow.innerHTML = `
+            <td>
+                <select name="detalleventa_set-${formIndex}-producto" class="form-control producto-select">
+                    <option value="">---------</option>
+                    {% for producto in productos %}
+                    <option value="{{ producto.id }}">{{ producto.codigo }} - {{ producto.nombre }} (Stock: {{ producto.stock }})</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="number" name="detalleventa_set-${formIndex}-cantidad" value="1" min="1" class="form-control cantidad-input">
+            </td>
+            <td>
+                <input type="number" name="detalleventa_set-${formIndex}-precio_venta" step="0.01" min="0" class="form-control precio-input">
+            </td>
+            <td class="subtotal-cell">S/ 0.00</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm delete-row"><i class="bi bi-trash"></i></button>
+            </td>
+        `;
+        tbody.appendChild(newRow);
+        agregarEventosFila(newRow);
+        calcularSubtotal(newRow);
+        calcularTotalGeneral();
+        formIndex++;
+        actualizarTotalForms();
+    });
+});
+</script>
+{% endblock %}
