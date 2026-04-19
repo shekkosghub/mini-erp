@@ -1,6 +1,5 @@
-# 1. Crear carpeta del proyecto y entrar
-mkdir mini-erp-vibe
-cd mini-erp-vibe
+# 1. Clonar el proyecto
+git clone git@github.com:shekkosghub/mini-erp.git
 
 # 2. Crear entorno virtual (Muy importante)
 python -m venv venv
